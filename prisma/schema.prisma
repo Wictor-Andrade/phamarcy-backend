@@ -1,15 +1,245 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum TipoFilial {
+  MATRIZ
+  FILIAL
+}
+
+enum TipoMovimento {
+  ENTRADA
+  SAIDA
+}
+
+model Filial {
+  id           String              @id @default(cuid())
+  nome         String
+  tipo         TipoFilial
+  cnpj         String              @unique
+  razaoSocial  String
+  nomeFantasia String
+  funcionarios FilialFuncionario[]
+  Config       Config?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+}
+
+model Funcionario {
+  id                  String              @id @default(cuid())
+  nome                String
+  salario             Float
+  porcentagemComissao Float
+  filiais             FilialFuncionario[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  OrdemDeCompra       OrdemDeCompra[]
+  Cotacao             Cotacao[]
+}
+
+model FilialFuncionario {
+  id            String      @id @default(cuid())
+  filialId      String
+  funcionarioId String
+  filial        Filial      @relation(fields: [filialId], references: [id], onDelete: Cascade)
+  funcionario   Funcionario @relation(fields: [funcionarioId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([filialId, funcionarioId])
+}
+
+model PrincipioAtivo {
+  id                    String       @id @default(cuid())
+  nome                  String
+  descricao             String
+  idMedicamentoGenerico String
+  estoqueMin            Int
+  estoqueIdeal          Int
+  estoqueMax            Int
+  medicamento           Medicamento?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  Promocao              Promocao[]
+}
+
+model Config {
+  id                  String   @id @default(cuid())
+  filialId            String   @unique
+  filial              Filial   @relation(fields: [filialId], references: [id], onDelete: Cascade)
+  defaultEstoqueMin   Int
+  defaultEstoqueIdeal Int
+  defaultEstoqueMax   Int
+  jobRecurrency       Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Medicamento {
+  id                       String                     @id @default(cuid())
+  nome                     String
+  principioAtivoId         String                     @unique
+  principioAtivo           PrincipioAtivo             @relation(fields: [principioAtivoId], references: [id])
+  itensOrdemDeCompra       OrdemDeCompraItem[]
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @updatedAt
+  Promocao                 Promocao[]
+  MedicamentoFornecedor    MedicamentoFornecedor[]
+  ItemNotaFiscalEletronica ItemNotaFiscalEletronica[]
+  EstoqueMovimentacao      EstoqueMovimentacao[]
+  ItemCotacao              ItemCotacao[]
+}
+
+model OrdemDeCompraItem {
+  id              String        @id @default(cuid())
+  ordemDeCompraId String
+  medicamentoId   String
+  ordemDeCompra   OrdemDeCompra @relation(fields: [ordemDeCompraId], references: [id], onDelete: Cascade)
+  medicamento     Medicamento   @relation(fields: [medicamentoId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model OrdemDeCompra {
+  id            String              @id @default(cuid())
+  status        String
+  aprovadoPorId String
+  aprovadoPor   Funcionario         @relation(fields: [aprovadoPorId], references: [id], onDelete: Restrict)
+  itens         OrdemDeCompraItem[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  Cotacao       Cotacao[]
+}
+
+model Promocao {
+  id                  String         @id @default(cuid())
+  idMedicamento       String
+  idPrincipioAtivo    String
+  medicamento         Medicamento    @relation(fields: [idMedicamento], references: [id], onDelete: Cascade)
+  principioAtivo      PrincipioAtivo @relation(fields: [idPrincipioAtivo], references: [id], onDelete: Cascade)
+  porcentagemDesconto Float
+  dataInicio          DateTime
+  dataFim             DateTime
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+}
+
+model Fornecedor {
+  id                   String                  @id @default(cuid())
+  nome                 String
+  cnpj                 String                  @unique
+  telefone             String
+  medicamentos         MedicamentoFornecedor[]
+  NotaFiscalEletronica NotaFiscalEletronica[]
+  cotacoes             Cotacao[]
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+}
+
+model MedicamentoFornecedor {
+  id            String      @id @default(cuid())
+  medicamentoId String
+  fornecedorId  String
+  medicamento   Medicamento @relation(fields: [medicamentoId], references: [id], onDelete: Cascade)
+  fornecedor    Fornecedor  @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([medicamentoId, fornecedorId])
+}
+
+model Cliente {
+  id           String                 @id @default(cuid())
+  nome         String
+  cpfCnpj      String                 @unique
+  telefone     String?
+  notasFiscais NotaFiscalEletronica[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+}
+
+model NotaFiscalEletronica {
+  id            String                        @id @default(cuid())
+  tipoMovimento String
+  clienteId     String?
+  fornecedorId  String?
+  cliente       Cliente?                      @relation(fields: [clienteId], references: [id])
+  fornecedor    Fornecedor?                   @relation(fields: [fornecedorId], references: [id])
+  comissao      ComissaoNotaFiscalEletronica?
+  itens         ItemNotaFiscalEletronica[]
+  createdAt     DateTime                      @default(now())
+  updatedAt     DateTime                      @updatedAt
+}
+
+model ItemNotaFiscalEletronica {
+  id                     String                @id @default(cuid())
+  notaFiscalEletronicaId String
+  medicamentoId          String
+  estoqueMovimentacoes   EstoqueMovimentacao[]
+  notaFiscalEletronica   NotaFiscalEletronica  @relation(fields: [notaFiscalEletronicaId], references: [id], onDelete: Cascade)
+  medicamento            Medicamento           @relation(fields: [medicamentoId], references: [id])
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+}
+
+model ComissaoNotaFiscalEletronica {
+  id                     String               @id @default(cuid())
+  notaFiscalEletronicaId String               @unique
+  notaFiscalEletronica   NotaFiscalEletronica @relation(fields: [notaFiscalEletronicaId], references: [id], onDelete: Cascade)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+}
+
+model EstoqueMovimentacao {
+  id                         String                   @id @default(cuid())
+  medicamentoId              String
+  itemNotaFiscalEletronicaId String
+  tipoMovimento              TipoMovimento
+  quantidade                 Int
+  precoUnitario              Float
+  dataMovimentacao           DateTime                 @default(now())
+  medicamento                Medicamento              @relation(fields: [medicamentoId], references: [id], onDelete: Cascade)
+  itemNotaFiscalEletronica   ItemNotaFiscalEletronica @relation(fields: [itemNotaFiscalEletronicaId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cotacao {
+  id              String        @id @default(cuid())
+  fornecedorId    String
+  ordemDeCompraId String
+  valorFrete      Float
+  dataValidade    DateTime
+  observacoes     String?
+  aprovadoPorId   String?
+  aprovadoPor     Funcionario?  @relation(fields: [aprovadoPorId], references: [id], onDelete: Restrict)
+  fornecedor      Fornecedor    @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
+  ordemDeCompra   OrdemDeCompra @relation(fields: [ordemDeCompraId], references: [id], onDelete: Cascade)
+  itens           ItemCotacao[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([fornecedorId, ordemDeCompraId])
+}
+
+model ItemCotacao {
+  id               String      @id @default(cuid())
+  cotacaoId        String
+  medicamentoId    String
+  quantidade       Int
+  precoUnitario    Float
+  prazoEntregaDias Int
+  cotacao          Cotacao     @relation(fields: [cotacaoId], references: [id], onDelete: Cascade)
+  medicamento      Medicamento @relation(fields: [medicamentoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cotacaoId, medicamentoId])
 }

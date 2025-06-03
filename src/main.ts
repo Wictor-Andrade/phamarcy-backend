@@ -10,7 +10,7 @@ async function bootstrap() {
   app.setGlobalPrefix('phamarcy/v1');
 
   const host = '0.0.0.0';
-  const port = configService.get<number>('port') || 5000;
+  const port = configService.get<number>('port') || 4000;
 
   await app.listen(port, host);
   Logger.log(

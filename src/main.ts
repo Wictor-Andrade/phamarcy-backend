@@ -1,8 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const configService = app.get(ConfigService);
+
+  app.setGlobalPrefix('phamarcy/v1');
+
+  const host = '0.0.0.0';
+  const port = configService.get<number>('port') || 5000;
+
+  await app.listen(port, host);
+  Logger.log(
+    `Application is running on: https://${host}:${port}/phamarcy/v1`,
+    'Bootstrap',
+  );
 }
 bootstrap();

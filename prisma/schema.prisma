@@ -189,6 +189,7 @@ model ItemNotaFiscalEletronica {
 
 model ComissaoNotaFiscalEletronica {
   id                     String               @id @default(cuid())
+  valorComissao          Float
   notaFiscalEletronicaId String               @unique
   notaFiscalEletronica   NotaFiscalEletronica @relation(fields: [notaFiscalEletronicaId], references: [id], onDelete: Cascade)
   createdAt              DateTime             @default(now())

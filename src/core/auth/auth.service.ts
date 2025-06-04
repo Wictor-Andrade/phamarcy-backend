@@ -31,16 +31,16 @@ export class AuthService {
   ) {}
 
   async login(response: Response, user: SafeUser): Promise<SafeUser> {
-    try {
-      const payload: UserPayload = {
-        userId: user.id,
-        email: user.email,
-        name: user.name,
-        funcionarioId: user.funcionarioId,
-        filialId: user.filialId,
-        roleId: user.roleId,
-      };
+    const payload: UserPayload = {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      funcionarioId: user.funcionarioId,
+      filialId: user.filialId,
+      roleId: user.roleId,
+    };
 
+    try {
       const acess_token = this.authHelper.getJwtToken(payload, 'access');
       const refresh_token = this.authHelper.getJwtToken(payload, 'refresh');
       this.authValidator.checkJwtTokenSize(acess_token, user.id);
@@ -54,10 +54,11 @@ export class AuthService {
       this.logger.error('Error during login: ', e);
       throw e;
     }
+
     return user;
   }
 
-  async validateUser(email: string, password: string): Promise<User> {
+  async validateUser(email: string, password: string): Promise<SafeUser> {
     try {
       const user = await this.userService.findByEmail(email);
       if (!user) {
@@ -73,7 +74,9 @@ export class AuthService {
         throw new UnauthorizedException('Email ou senha incorretos.');
       }
 
-      return user;
+      const { password: passwordDb, ...safeUser } = user;
+
+      return safeUser;
     } catch (e) {
       this.logger.error(`Erro ao validar usuário: ${e}`);
 

@@ -57,7 +57,7 @@ model FilialFuncionario {
   @@unique([filialId, funcionarioId])
 }
 
-model PrincipioAtivo {
+model ActiveIngredient {
   id                    String       @id @default(uuid()) @db.Uuid
   nome                  String
   descricao             String
@@ -86,8 +86,8 @@ model Config {
 model Medicamento {
   id                       String                     @id @default(uuid()) @db.Uuid
   nome                     String
-  principioAtivoId         String                     @unique @db.Uuid
-  principioAtivo           PrincipioAtivo             @relation(fields: [principioAtivoId], references: [id])
+  activeIngredientId       String                     @unique @db.Uuid
+  ActiveIngredient         ActiveIngredient           @relation(fields: [activeIngredientId], references: [id])
   itensOrdemDeCompra       OrdemDeCompraItem[]
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
@@ -120,16 +120,16 @@ model OrdemDeCompra {
 }
 
 model Promocao {
-  id                  String         @id @default(uuid()) @db.Uuid
-  idMedicamento       String         @db.Uuid
-  idPrincipioAtivo    String         @db.Uuid
-  medicamento         Medicamento    @relation(fields: [idMedicamento], references: [id], onDelete: Cascade)
-  principioAtivo      PrincipioAtivo @relation(fields: [idPrincipioAtivo], references: [id], onDelete: Cascade)
+  id                  String           @id @default(uuid()) @db.Uuid
+  idMedicamento       String           @db.Uuid
+  medicamento         Medicamento      @relation(fields: [idMedicamento], references: [id], onDelete: Cascade)
+  activeIngredientId  String           @unique @db.Uuid
+  ActiveIngredient    ActiveIngredient @relation(fields: [activeIngredientId], references: [id])
   porcentagemDesconto Float
   dataInicio          DateTime
   dataFim             DateTime
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 }
 
 model Fornecedor {
@@ -156,7 +156,7 @@ model MedicamentoFornecedor {
   @@unique([medicamentoId, fornecedorId])
 }
 
-model Cliente {
+model Client {
   id           String                 @id @default(uuid()) @db.Uuid
   nome         String
   cpfCnpj      String                 @unique
@@ -169,9 +169,9 @@ model Cliente {
 model NotaFiscalEletronica {
   id            String                        @id @default(uuid()) @db.Uuid
   tipoMovimento String
-  clienteId     String?                       @db.Uuid
+  clientId      String?                       @db.Uuid
   fornecedorId  String                        @db.Uuid
-  cliente       Cliente?                      @relation(fields: [clienteId], references: [id])
+  client        Client?                       @relation(fields: [clientId], references: [id])
   fornecedor    Fornecedor?                   @relation(fields: [fornecedorId], references: [id])
   comissao      ComissaoNotaFiscalEletronica?
   itens         ItemNotaFiscalEletronica[]

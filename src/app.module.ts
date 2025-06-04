@@ -11,6 +11,8 @@ import configuration from './config/app.config';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { RedisConfig } from './config/redis.config';
 import { configSchema } from './config/schemas/config.schema';
+import { ClientModule } from './modules/client/client.module';
+import { FuncionarioModule } from './modules/funcionario/funcionario.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { configSchema } from './config/schemas/config.schema';
     PrismaModule,
     UserModule,
     AuthModule,
+    ClientModule,
+    FuncionarioModule,
   ],
   providers: [
     {

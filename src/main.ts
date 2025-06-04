@@ -6,6 +6,7 @@ import { json, urlencoded } from 'express';
 import { AllExceptionsFilter } from './core/filters/all-exceptions.filter';
 import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,6 +31,17 @@ async function bootstrap() {
     }),
   );
 
+  const config = new DocumentBuilder()
+    .setTitle('A barateira docs')
+    .setDescription('A barateira api documentation')
+    .setVersion('1.0')
+    .addTag('abarateira')
+    .build();
+
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, documentFactory);
+
+
   const httpAdapterHost = app.get(HttpAdapterHost);
 
   app.use(json({ limit: '20mb' }));
@@ -43,6 +55,7 @@ async function bootstrap() {
   const host = '0.0.0.0';
 
   await app.listen(port, host);
+  Logger.log(`Swagger running on https://${host}:${port}/docs`,'Bootstrap')
   Logger.log(
     `Application is running on: https://${host}:${port}/phamarcy/v1`,
     'Bootstrap',

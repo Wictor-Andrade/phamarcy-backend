@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  seed     = "ts-node prisma/seed.ts"
 }
 
 datasource db {
@@ -18,7 +19,7 @@ enum TipoMovimento {
 }
 
 model Filial {
-  id           String              @id @default(cuid())
+  id           String              @id @default(uuid()) @db.Uuid
   nome         String
   tipo         TipoFilial
   cnpj         String              @unique
@@ -28,10 +29,11 @@ model Filial {
   Config       Config?
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
+  users        User[]
 }
 
 model Funcionario {
-  id                  String              @id @default(cuid())
+  id                  String              @id @default(uuid()) @db.Uuid
   nome                String
   salario             Float
   porcentagemComissao Float
@@ -40,13 +42,14 @@ model Funcionario {
   updatedAt           DateTime            @updatedAt
   OrdemDeCompra       OrdemDeCompra[]
   Cotacao             Cotacao[]
+  users               User[]
 }
 
 model FilialFuncionario {
-  id            String      @id @default(cuid())
-  filialId      String
-  funcionarioId String
+  id            String      @id @default(uuid()) @db.Uuid
+  filialId      String      @db.Uuid
   filial        Filial      @relation(fields: [filialId], references: [id], onDelete: Cascade)
+  funcionarioId String      @db.Uuid
   funcionario   Funcionario @relation(fields: [funcionarioId], references: [id], onDelete: Cascade)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
@@ -55,10 +58,10 @@ model FilialFuncionario {
 }
 
 model PrincipioAtivo {
-  id                    String       @id @default(cuid())
+  id                    String       @id @default(uuid()) @db.Uuid
   nome                  String
   descricao             String
-  idMedicamentoGenerico String
+  idMedicamentoGenerico String       @db.Uuid
   estoqueMin            Int
   estoqueIdeal          Int
   estoqueMax            Int
@@ -69,8 +72,8 @@ model PrincipioAtivo {
 }
 
 model Config {
-  id                  String   @id @default(cuid())
-  filialId            String   @unique
+  id                  String   @id @default(uuid()) @db.Uuid
+  filialId            String   @unique @db.Uuid
   filial              Filial   @relation(fields: [filialId], references: [id], onDelete: Cascade)
   defaultEstoqueMin   Int
   defaultEstoqueIdeal Int
@@ -81,9 +84,9 @@ model Config {
 }
 
 model Medicamento {
-  id                       String                     @id @default(cuid())
+  id                       String                     @id @default(uuid()) @db.Uuid
   nome                     String
-  principioAtivoId         String                     @unique
+  principioAtivoId         String                     @unique @db.Uuid
   principioAtivo           PrincipioAtivo             @relation(fields: [principioAtivoId], references: [id])
   itensOrdemDeCompra       OrdemDeCompraItem[]
   createdAt                DateTime                   @default(now())
@@ -96,9 +99,9 @@ model Medicamento {
 }
 
 model OrdemDeCompraItem {
-  id              String        @id @default(cuid())
-  ordemDeCompraId String
-  medicamentoId   String
+  id              String        @id @default(uuid()) @db.Uuid
+  ordemDeCompraId String        @db.Uuid
+  medicamentoId   String        @db.Uuid
   ordemDeCompra   OrdemDeCompra @relation(fields: [ordemDeCompraId], references: [id], onDelete: Cascade)
   medicamento     Medicamento   @relation(fields: [medicamentoId], references: [id], onDelete: Cascade)
   createdAt       DateTime      @default(now())
@@ -106,9 +109,9 @@ model OrdemDeCompraItem {
 }
 
 model OrdemDeCompra {
-  id            String              @id @default(cuid())
+  id            String              @id @default(uuid()) @db.Uuid
   status        String
-  aprovadoPorId String
+  aprovadoPorId String              @db.Uuid
   aprovadoPor   Funcionario         @relation(fields: [aprovadoPorId], references: [id], onDelete: Restrict)
   itens         OrdemDeCompraItem[]
   createdAt     DateTime            @default(now())
@@ -117,9 +120,9 @@ model OrdemDeCompra {
 }
 
 model Promocao {
-  id                  String         @id @default(cuid())
-  idMedicamento       String
-  idPrincipioAtivo    String
+  id                  String         @id @default(uuid()) @db.Uuid
+  idMedicamento       String         @db.Uuid
+  idPrincipioAtivo    String         @db.Uuid
   medicamento         Medicamento    @relation(fields: [idMedicamento], references: [id], onDelete: Cascade)
   principioAtivo      PrincipioAtivo @relation(fields: [idPrincipioAtivo], references: [id], onDelete: Cascade)
   porcentagemDesconto Float
@@ -130,7 +133,7 @@ model Promocao {
 }
 
 model Fornecedor {
-  id                   String                  @id @default(cuid())
+  id                   String                  @id @default(uuid()) @db.Uuid
   nome                 String
   cnpj                 String                  @unique
   telefone             String
@@ -142,9 +145,9 @@ model Fornecedor {
 }
 
 model MedicamentoFornecedor {
-  id            String      @id @default(cuid())
-  medicamentoId String
-  fornecedorId  String
+  id            String      @id @default(uuid()) @db.Uuid
+  medicamentoId String      @db.Uuid
+  fornecedorId  String      @db.Uuid
   medicamento   Medicamento @relation(fields: [medicamentoId], references: [id], onDelete: Cascade)
   fornecedor    Fornecedor  @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
   createdAt     DateTime    @default(now())
@@ -154,7 +157,7 @@ model MedicamentoFornecedor {
 }
 
 model Cliente {
-  id           String                 @id @default(cuid())
+  id           String                 @id @default(uuid()) @db.Uuid
   nome         String
   cpfCnpj      String                 @unique
   telefone     String?
@@ -164,10 +167,10 @@ model Cliente {
 }
 
 model NotaFiscalEletronica {
-  id            String                        @id @default(cuid())
+  id            String                        @id @default(uuid()) @db.Uuid
   tipoMovimento String
-  clienteId     String?
-  fornecedorId  String?
+  clienteId     String?                       @db.Uuid
+  fornecedorId  String                        @db.Uuid
   cliente       Cliente?                      @relation(fields: [clienteId], references: [id])
   fornecedor    Fornecedor?                   @relation(fields: [fornecedorId], references: [id])
   comissao      ComissaoNotaFiscalEletronica?
@@ -177,9 +180,9 @@ model NotaFiscalEletronica {
 }
 
 model ItemNotaFiscalEletronica {
-  id                     String                @id @default(cuid())
-  notaFiscalEletronicaId String
-  medicamentoId          String
+  id                     String                @id @default(uuid()) @db.Uuid
+  notaFiscalEletronicaId String                @db.Uuid
+  medicamentoId          String                @db.Uuid
   estoqueMovimentacoes   EstoqueMovimentacao[]
   notaFiscalEletronica   NotaFiscalEletronica  @relation(fields: [notaFiscalEletronicaId], references: [id], onDelete: Cascade)
   medicamento            Medicamento           @relation(fields: [medicamentoId], references: [id])
@@ -188,18 +191,18 @@ model ItemNotaFiscalEletronica {
 }
 
 model ComissaoNotaFiscalEletronica {
-  id                     String               @id @default(cuid())
+  id                     String               @id @default(uuid()) @db.Uuid
   valorComissao          Float
-  notaFiscalEletronicaId String               @unique
+  notaFiscalEletronicaId String               @unique @db.Uuid
   notaFiscalEletronica   NotaFiscalEletronica @relation(fields: [notaFiscalEletronicaId], references: [id], onDelete: Cascade)
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
 }
 
 model EstoqueMovimentacao {
-  id                         String                   @id @default(cuid())
-  medicamentoId              String
-  itemNotaFiscalEletronicaId String
+  id                         String                   @id @default(uuid()) @db.Uuid
+  medicamentoId              String                   @db.Uuid
+  itemNotaFiscalEletronicaId String                   @db.Uuid
   tipoMovimento              TipoMovimento
   quantidade                 Int
   precoUnitario              Float
@@ -212,13 +215,13 @@ model EstoqueMovimentacao {
 }
 
 model Cotacao {
-  id              String        @id @default(cuid())
-  fornecedorId    String
-  ordemDeCompraId String
+  id              String        @id @default(uuid()) @db.Uuid
+  fornecedorId    String        @db.Uuid
+  ordemDeCompraId String        @db.Uuid
   valorFrete      Float
   dataValidade    DateTime
   observacoes     String?
-  aprovadoPorId   String?
+  aprovadoPorId   String?       @db.Uuid
   aprovadoPor     Funcionario?  @relation(fields: [aprovadoPorId], references: [id], onDelete: Restrict)
   fornecedor      Fornecedor    @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
   ordemDeCompra   OrdemDeCompra @relation(fields: [ordemDeCompraId], references: [id], onDelete: Cascade)
@@ -230,9 +233,9 @@ model Cotacao {
 }
 
 model ItemCotacao {
-  id               String      @id @default(cuid())
-  cotacaoId        String
-  medicamentoId    String
+  id               String      @id @default(uuid()) @db.Uuid
+  cotacaoId        String      @db.Uuid
+  medicamentoId    String      @db.Uuid
   quantidade       Int
   precoUnitario    Float
   prazoEntregaDias Int
@@ -243,4 +246,32 @@ model ItemCotacao {
   updatedAt DateTime @updatedAt
 
   @@unique([cotacaoId, medicamentoId])
+}
+
+model Role {
+  id          String       @id @default(uuid()) @db.Uuid
+  name        String       @unique
+  description String
+  permissions Permission[]
+  users       User[]
+}
+
+model Permission {
+  id          String @id @default(uuid()) @db.Uuid
+  name        String @unique
+  description String
+  roles       Role[]
+}
+
+model User {
+  id            String      @id @default(uuid()) @db.Uuid
+  email         String      @unique
+  password      String
+  name          String
+  filialId      String      @db.Uuid
+  filial        Filial      @relation(fields: [filialId], references: [id])
+  roleId        String      @db.Uuid
+  role          Role        @relation(fields: [roleId], references: [id])
+  funcionarioId String      @db.Uuid
+  funcionario   Funcionario @relation(fields: [funcionarioId], references: [id])
 }

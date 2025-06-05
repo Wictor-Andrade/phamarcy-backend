@@ -14,6 +14,7 @@ import { configSchema } from './config/schemas/config.schema';
 import { ClientModule } from './modules/client/client.module';
 import { FuncionarioModule } from './modules/funcionario/funcionario.module';
 import { FilialConfigModule } from './modules/filial-config/filial-config.module';
+import { OrdemDeCompraItemModule } from './modules/ordem-compra-item/ordem-de-compra-item.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { FilialConfigModule } from './modules/filial-config/filial-config.module
     ClientModule,
     FuncionarioModule,
     FilialConfigModule,
+    OrdemDeCompraItemModule,
   ],
   providers: [
     {

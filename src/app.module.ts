@@ -17,6 +17,8 @@ import { FilialConfigModule } from './modules/filial-config/filial-config.module
 import { MedicamentoModule } from './modules/medicamento/medicamento.module';
 import { ActiveIngredientModule } from './modules/active-ingredient/active-ingredient.module';
 import { OrdemDeCompraItemModule } from './modules/ordem-compra-item/ordem-de-compra-item.module';
+import { MedicamentoFornecedorModule } from './modules/medicamento-fornecedor/medicamento-fornecedor.module';
+import { NotaFiscalEletronicaModule } from './NotaFiscalEletronica/nota-fiscal-eletronica.module';
 
 @Module({
   imports: [
@@ -43,6 +45,10 @@ import { OrdemDeCompraItemModule } from './modules/ordem-compra-item/ordem-de-co
     OrdemDeCompraItemModule,
     MedicamentoModule,
     ActiveIngredientModule,
+    OrdemDeCompraItemModule,
+    MedicamentoModule,
+    MedicamentoFornecedorModule,
+    NotaFiscalEletronicaModule,
   ],
   providers: [
     {

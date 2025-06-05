@@ -13,6 +13,7 @@ import { RedisConfig } from './config/redis.config';
 import { configSchema } from './config/schemas/config.schema';
 import { ClientModule } from './modules/client/client.module';
 import { FuncionarioModule } from './modules/funcionario/funcionario.module';
+import { FilialConfigModule } from './modules/filial-config/filial-config.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { FuncionarioModule } from './modules/funcionario/funcionario.module';
     AuthModule,
     ClientModule,
     FuncionarioModule,
+    FilialConfigModule,
   ],
   providers: [
     {

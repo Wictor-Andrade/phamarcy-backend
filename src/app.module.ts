@@ -14,6 +14,8 @@ import { configSchema } from './config/schemas/config.schema';
 import { ClientModule } from './modules/client/client.module';
 import { FuncionarioModule } from './modules/funcionario/funcionario.module';
 import { FilialConfigModule } from './modules/filial-config/filial-config.module';
+import { MedicamentoModule } from './modules/medicamento/medicamento.module';
+import { ActiveIngredientModule } from './modules/active-ingredient/active-ingredient.module';
 import { OrdemDeCompraItemModule } from './modules/ordem-compra-item/ordem-de-compra-item.module';
 
 @Module({
@@ -39,6 +41,8 @@ import { OrdemDeCompraItemModule } from './modules/ordem-compra-item/ordem-de-co
     FuncionarioModule,
     FilialConfigModule,
     OrdemDeCompraItemModule,
+    MedicamentoModule,
+    ActiveIngredientModule,
   ],
   providers: [
     {

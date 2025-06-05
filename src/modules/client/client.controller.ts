@@ -10,7 +10,9 @@ import {
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Clientes')
 @Controller('clients')
 export class ClientController {
   constructor(private readonly service: ClientService) {}
@@ -18,6 +20,7 @@ export class ClientController {
   @Get()
   getAll() {
     return this.service.getAll();
+
   }
 
   @Get(':id')

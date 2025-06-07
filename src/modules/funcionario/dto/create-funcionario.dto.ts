@@ -19,4 +19,3 @@ export class CreateFuncionarioDto {
   @Max(1)
   porcentagemComissao: number;
 }
-

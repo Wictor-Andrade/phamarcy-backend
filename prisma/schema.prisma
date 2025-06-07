@@ -18,6 +18,12 @@ enum TipoMovimento {
   SAIDA
 }
 
+enum OriginType {
+  SINTETICA
+  NATURAL
+  BIOTECNOLOGICA
+}
+
 model Filial {
   id           String              @id @default(uuid()) @db.Uuid
   nome         String
@@ -58,17 +64,19 @@ model FilialFuncionario {
 }
 
 model ActiveIngredient {
-  id                    String       @id @default(uuid()) @db.Uuid
-  nome                  String
-  descricao             String
-  idMedicamentoGenerico String       @db.Uuid
-  estoqueMin            Int
-  estoqueIdeal          Int
-  estoqueMax            Int
-  medicamento           Medicamento?
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
-  Promocao              Promocao[]
+  id                    String        @id @default(uuid()) @db.Uuid
+  name                  String
+  description           String
+  contraindication      String
+  origin                OriginType
+  estoqueMin            Int?
+  estoqueIdeal          Int?
+  estoqueMax            Int?
+  idMedicamentoGenerico String?       @db.Uuid
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  promocoes             Promocao[]
+  medicamentos          Medicamento[]
 }
 
 model Config {
@@ -85,7 +93,7 @@ model Config {
 
 model Medicamento {
   id                       String                     @id @default(uuid()) @db.Uuid
-  nome                     String
+  name                     String
   activeIngredientId       String                     @unique @db.Uuid
   ActiveIngredient         ActiveIngredient           @relation(fields: [activeIngredientId], references: [id])
   itensOrdemDeCompra       OrdemDeCompraItem[]
@@ -122,7 +130,7 @@ model OrdemDeCompra {
 model Promocao {
   id                  String           @id @default(uuid()) @db.Uuid
   idMedicamento       String           @db.Uuid
-  medicamento         Medicamento      @relation(fields: [idMedicamento], references: [id], onDelete: Cascade)
+  Medicamento         Medicamento      @relation(fields: [idMedicamento], references: [id], onDelete: Cascade)
   activeIngredientId  String           @unique @db.Uuid
   ActiveIngredient    ActiveIngredient @relation(fields: [activeIngredientId], references: [id])
   porcentagemDesconto Float

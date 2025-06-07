@@ -1,23 +1,23 @@
 import {
+  Body,
   Controller,
-  Post,
+  Delete,
   Get,
   Param,
-  Body,
-  Put,
-  Delete,
   ParseUUIDPipe,
+  Post,
+  Put,
 } from '@nestjs/common';
 import { ActiveIngredientService } from './active-ingredient.service';
-import { CreateActiveIngredientDto } from './dto/create-active-ingredient.dto';
 import { UpdateActiveIngredientDto } from './dto/update-active-ingredient.dto';
+import { CreateActiveIngredientStepOneDto } from './dto/create-active-ingredient-step-one.dto';
 
 @Controller('active-ingredients')
 export class ActiveIngredientController {
   constructor(private readonly service: ActiveIngredientService) {}
 
   @Post()
-  create(@Body() dto: CreateActiveIngredientDto) {
+  create(@Body() dto: CreateActiveIngredientStepOneDto) {
     return this.service.create(dto);
   }
 

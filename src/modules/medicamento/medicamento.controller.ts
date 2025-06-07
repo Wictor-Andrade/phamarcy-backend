@@ -1,12 +1,12 @@
 import {
+  Body,
   Controller,
-  Post,
+  Delete,
   Get,
   Param,
-  Body,
-  Put,
-  Delete,
   ParseUUIDPipe,
+  Post,
+  Put,
 } from '@nestjs/common';
 import { MedicamentoService } from './medicamento.service';
 import { CreateMedicamentoDto } from './dto/create-medicamento.dto';
@@ -32,7 +32,10 @@ export class MedicamentoController {
   }
 
   @Put(':id')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateMedicamentoDto) {
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateMedicamentoDto,
+  ) {
     return this.service.update(id, dto);
   }
 

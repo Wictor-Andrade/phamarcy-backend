@@ -17,7 +17,8 @@ export class CreateUserDto {
     example: '@Admin1234',
     minLength: 6,
     maxLength: 20,
-    description: 'Deve conter letras maiúsculas, minúsculas e número ou caractere especial',
+    description:
+      'Deve conter letras maiúsculas, minúsculas e número ou caractere especial',
   })
   @IsString()
   @MinLength(6)

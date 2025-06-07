@@ -38,9 +38,8 @@ export class JwtAccessGuard extends AuthGuard('jwt') {
 
     const token = this.authHelper.extractTokenFromCookie(req, 'access');
     const jwtSecret = this.configService.get<string>('jwt.access.secret');
-    if(!token) throw new UnauthorizedException();
+    if (!token) throw new UnauthorizedException();
     try {
-
       const jwtSignedFields =
         await this.jwtService.verifyAsync<JwtSignedFields>(token, {
           secret: jwtSecret,

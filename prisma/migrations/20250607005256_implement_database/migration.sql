@@ -4,6 +4,9 @@ CREATE TYPE "TipoFilial" AS ENUM ('MATRIZ', 'FILIAL');
 -- CreateEnum
 CREATE TYPE "TipoMovimento" AS ENUM ('ENTRADA', 'SAIDA');
 
+-- CreateEnum
+CREATE TYPE "OriginType" AS ENUM ('SINTETICA', 'NATURAL', 'BIOTECNOLOGICA');
+
 -- CreateTable
 CREATE TABLE "Filial" (
     "id" UUID NOT NULL,
@@ -42,18 +45,21 @@ CREATE TABLE "FilialFuncionario" (
 );
 
 -- CreateTable
-CREATE TABLE "PrincipioAtivo" (
+CREATE TABLE "ActiveIngredient" (
     "id" UUID NOT NULL,
-    "nome" TEXT NOT NULL,
-    "descricao" TEXT NOT NULL,
-    "idMedicamentoGenerico" UUID NOT NULL,
-    "estoqueMin" INTEGER NOT NULL,
-    "estoqueIdeal" INTEGER NOT NULL,
-    "estoqueMax" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "contraindication" TEXT NOT NULL,
+    "importance" TEXT NOT NULL,
+    "idMedicamentoGenerico" UUID,
+    "origin" "OriginType" NOT NULL,
+    "estoqueMin" INTEGER,
+    "estoqueIdeal" INTEGER,
+    "estoqueMax" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "PrincipioAtivo_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ActiveIngredient_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -74,7 +80,7 @@ CREATE TABLE "Config" (
 CREATE TABLE "Medicamento" (
     "id" UUID NOT NULL,
     "nome" TEXT NOT NULL,
-    "principioAtivoId" UUID NOT NULL,
+    "activeIngredientId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -107,7 +113,7 @@ CREATE TABLE "OrdemDeCompra" (
 CREATE TABLE "Promocao" (
     "id" UUID NOT NULL,
     "idMedicamento" UUID NOT NULL,
-    "idPrincipioAtivo" UUID NOT NULL,
+    "activeIngredientId" UUID NOT NULL,
     "porcentagemDesconto" DOUBLE PRECISION NOT NULL,
     "dataInicio" TIMESTAMP(3) NOT NULL,
     "dataFim" TIMESTAMP(3) NOT NULL,
@@ -141,7 +147,7 @@ CREATE TABLE "MedicamentoFornecedor" (
 );
 
 -- CreateTable
-CREATE TABLE "Cliente" (
+CREATE TABLE "Client" (
     "id" UUID NOT NULL,
     "nome" TEXT NOT NULL,
     "cpfCnpj" TEXT NOT NULL,
@@ -149,14 +155,14 @@ CREATE TABLE "Cliente" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Cliente_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Client_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "NotaFiscalEletronica" (
     "id" UUID NOT NULL,
     "tipoMovimento" TEXT NOT NULL,
-    "clienteId" UUID,
+    "clientId" UUID,
     "fornecedorId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -279,7 +285,10 @@ CREATE UNIQUE INDEX "FilialFuncionario_filialId_funcionarioId_key" ON "FilialFun
 CREATE UNIQUE INDEX "Config_filialId_key" ON "Config"("filialId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Medicamento_principioAtivoId_key" ON "Medicamento"("principioAtivoId");
+CREATE UNIQUE INDEX "Medicamento_activeIngredientId_key" ON "Medicamento"("activeIngredientId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Promocao_activeIngredientId_key" ON "Promocao"("activeIngredientId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Fornecedor_cnpj_key" ON "Fornecedor"("cnpj");
@@ -288,7 +297,7 @@ CREATE UNIQUE INDEX "Fornecedor_cnpj_key" ON "Fornecedor"("cnpj");
 CREATE UNIQUE INDEX "MedicamentoFornecedor_medicamentoId_fornecedorId_key" ON "MedicamentoFornecedor"("medicamentoId", "fornecedorId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Cliente_cpfCnpj_key" ON "Cliente"("cpfCnpj");
+CREATE UNIQUE INDEX "Client_cpfCnpj_key" ON "Client"("cpfCnpj");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ComissaoNotaFiscalEletronica_notaFiscalEletronicaId_key" ON "ComissaoNotaFiscalEletronica"("notaFiscalEletronicaId");
@@ -321,7 +330,7 @@ ALTER TABLE "FilialFuncionario" ADD CONSTRAINT "FilialFuncionario_funcionarioId_
 ALTER TABLE "Config" ADD CONSTRAINT "Config_filialId_fkey" FOREIGN KEY ("filialId") REFERENCES "Filial"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Medicamento" ADD CONSTRAINT "Medicamento_principioAtivoId_fkey" FOREIGN KEY ("principioAtivoId") REFERENCES "PrincipioAtivo"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Medicamento" ADD CONSTRAINT "Medicamento_activeIngredientId_fkey" FOREIGN KEY ("activeIngredientId") REFERENCES "ActiveIngredient"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrdemDeCompraItem" ADD CONSTRAINT "OrdemDeCompraItem_ordemDeCompraId_fkey" FOREIGN KEY ("ordemDeCompraId") REFERENCES "OrdemDeCompra"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -336,7 +345,7 @@ ALTER TABLE "OrdemDeCompra" ADD CONSTRAINT "OrdemDeCompra_aprovadoPorId_fkey" FO
 ALTER TABLE "Promocao" ADD CONSTRAINT "Promocao_idMedicamento_fkey" FOREIGN KEY ("idMedicamento") REFERENCES "Medicamento"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Promocao" ADD CONSTRAINT "Promocao_idPrincipioAtivo_fkey" FOREIGN KEY ("idPrincipioAtivo") REFERENCES "PrincipioAtivo"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Promocao" ADD CONSTRAINT "Promocao_activeIngredientId_fkey" FOREIGN KEY ("activeIngredientId") REFERENCES "ActiveIngredient"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MedicamentoFornecedor" ADD CONSTRAINT "MedicamentoFornecedor_medicamentoId_fkey" FOREIGN KEY ("medicamentoId") REFERENCES "Medicamento"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -345,7 +354,7 @@ ALTER TABLE "MedicamentoFornecedor" ADD CONSTRAINT "MedicamentoFornecedor_medica
 ALTER TABLE "MedicamentoFornecedor" ADD CONSTRAINT "MedicamentoFornecedor_fornecedorId_fkey" FOREIGN KEY ("fornecedorId") REFERENCES "Fornecedor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "NotaFiscalEletronica" ADD CONSTRAINT "NotaFiscalEletronica_clienteId_fkey" FOREIGN KEY ("clienteId") REFERENCES "Cliente"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "NotaFiscalEletronica" ADD CONSTRAINT "NotaFiscalEletronica_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "NotaFiscalEletronica" ADD CONSTRAINT "NotaFiscalEletronica_fornecedorId_fkey" FOREIGN KEY ("fornecedorId") REFERENCES "Fornecedor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

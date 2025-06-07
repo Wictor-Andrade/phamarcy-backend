@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserPayload } from './models/UserPayload';
 import { JwtUnsignedFields } from './auth.interface';
 import { ConfigService } from '@nestjs/config';
 import * as ms from 'ms';
 import { Request, Response } from 'express';
-import { InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
 export class AuthHelper {
@@ -51,8 +50,10 @@ export class AuthHelper {
     token: string,
     type: 'access' | 'refresh',
   ) {
-    const acessExpiration = this.configService.get<ms.StringValue>('jwt.access.expiresIn') || '1d';
-    const refreshExpiration = this.configService.get<ms.StringValue>('jwt.refresh.expiresIn') || '1d';
+    const acessExpiration =
+      this.configService.get<ms.StringValue>('jwt.access.expiresIn') || '1d';
+    const refreshExpiration =
+      this.configService.get<ms.StringValue>('jwt.refresh.expiresIn') || '1d';
 
     type === 'access'
       ? this.createAcessTokenCookie(response, token, ms(acessExpiration))
@@ -89,7 +90,7 @@ export class AuthHelper {
       'jwt.refresh.cookieName',
     );
 
-    if(!cookieTokenName) throw new InternalServerErrorException();
+    if (!cookieTokenName) throw new InternalServerErrorException();
 
     const domain = this.configService.get<string>('cookie.domain');
     const secure = this.configService.get<boolean>('cookie.secure');
@@ -113,7 +114,7 @@ export class AuthHelper {
       'jwt.access.cookieName',
     );
 
-    if(!cookieTokenName) throw new InternalServerErrorException();
+    if (!cookieTokenName) throw new InternalServerErrorException();
 
     const domain = this.configService.get<string>('cookie.domain');
     const secure = this.configService.get<boolean>('cookie.secure');

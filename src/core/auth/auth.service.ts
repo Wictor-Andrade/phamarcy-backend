@@ -49,7 +49,6 @@ export class AuthService {
       this.authHelper.createCookieOfToken(response, refresh_token, 'refresh');
 
       this.logger.log(`User ${user.email} logged in`);
-
     } catch (e) {
       this.logger.error('Error during login: ', e);
       throw e;
@@ -104,7 +103,6 @@ export class AuthService {
         funcionarioId: user.funcionarioId,
         name: user.name,
         roleId: user.roleId,
-
       };
 
       const refresh_token = this.authHelper.getJwtToken(payload, 'refresh');

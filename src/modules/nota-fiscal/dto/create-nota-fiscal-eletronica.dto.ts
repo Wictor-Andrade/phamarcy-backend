@@ -6,7 +6,11 @@ export class CreateNotaFiscalEletronicaDto {
   @IsString()
   tipoMovimento: string;
 
-  @ApiProperty({ description: 'ID do cliente (opcional)', example: 'uuid-client', required: false })
+  @ApiProperty({
+    description: 'ID do cliente (opcional)',
+    example: 'uuid-client',
+    required: false,
+  })
   @IsOptional()
   @IsUUID()
   clientId?: string;

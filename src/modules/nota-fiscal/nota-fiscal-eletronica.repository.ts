@@ -6,7 +6,9 @@ import { PrismaService } from 'src/core/prisma/prisma.service';
 export class NotaFiscalEletronicaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: Prisma.NotaFiscalEletronicaCreateInput): Promise<NotaFiscalEletronica> {
+  async create(
+    data: Prisma.NotaFiscalEletronicaCreateInput,
+  ): Promise<NotaFiscalEletronica> {
     return this.prisma.notaFiscalEletronica.create({ data });
   }
 
@@ -33,7 +35,10 @@ export class NotaFiscalEletronicaRepository {
     });
   }
 
-  async update(id: string, data: Prisma.NotaFiscalEletronicaUpdateInput): Promise<NotaFiscalEletronica> {
+  async update(
+    id: string,
+    data: Prisma.NotaFiscalEletronicaUpdateInput,
+  ): Promise<NotaFiscalEletronica> {
     return this.prisma.notaFiscalEletronica.update({ where: { id }, data });
   }
 

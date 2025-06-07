@@ -1,6 +1,6 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import * as compression from 'compression';
 import { json, urlencoded } from 'express';
 import { AllExceptionsFilter } from './core/filters/all-exceptions.filter';
@@ -41,7 +41,6 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);
 
-
   const httpAdapterHost = app.get(HttpAdapterHost);
 
   app.use(json({ limit: '20mb' }));
@@ -55,7 +54,7 @@ async function bootstrap() {
   const host = '0.0.0.0';
 
   await app.listen(port, host);
-  Logger.log(`Swagger running on https://${host}:${port}/docs`,'Bootstrap')
+  Logger.log(`Swagger running on https://${host}:${port}/docs`, 'Bootstrap');
   Logger.log(
     `Application is running on: https://${host}:${port}/phamarcy/v1`,
     'Bootstrap',

@@ -1,10 +1,10 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Post,
   Put,
 } from '@nestjs/common';
 import { ClientService } from './client.service';
@@ -20,7 +20,6 @@ export class ClientController {
   @Get()
   getAll() {
     return this.service.getAll();
-
   }
 
   @Get(':id')

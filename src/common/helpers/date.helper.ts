@@ -16,7 +16,9 @@ export class DateHelper {
 
   formatAndFixFullDateWithHour(date: Date | string): string {
     const saoPauloDate = this.fixDateToBRSaoPaulo(date);
-    return format(saoPauloDate, "dd 'de' MMM 'de' yyyy, 'às' HH:mm:ss", { locale: ptBR });
+    return format(saoPauloDate, "dd 'de' MMM 'de' yyyy, 'às' HH:mm:ss", {
+      locale: ptBR,
+    });
   }
 
   fixDateToBRSaoPaulo(date: Date | string): Date {

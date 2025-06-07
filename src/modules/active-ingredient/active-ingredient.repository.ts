@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CreateActiveIngredientDto } from './dto/create-active-ingredient.dto';
 import { UpdateActiveIngredientDto } from './dto/update-active-ingredient.dto';
-import { PrismaService } from '../../core/prisma/prisma.service';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateActiveIngredientStepOneDto } from './dto/create-active-ingredient-step-one.dto';
+import { PrismaService } from '@core/prisma/prisma.service';
 
 @ApiTags('Principio Ativo')
 @Injectable()
 export class ActiveIngredientRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(dto: CreateActiveIngredientDto) {
-    return this.prisma.activeIngredient.create({ data: dto });
+  create(data: CreateActiveIngredientStepOneDto) {
+    return this.prisma.activeIngredient.create({ data });
   }
 
   findAll() {

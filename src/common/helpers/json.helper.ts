@@ -40,7 +40,8 @@ export class JsonHelper {
     }
 
     for (const key in obj) {
-      const isBigIntAsString = typeof obj[key] === 'string' && obj[key].endsWith('n');
+      const isBigIntAsString =
+        typeof obj[key] === 'string' && obj[key].endsWith('n');
       if (isBigIntAsString) {
         const bigIntString = obj[key].replace('n', '');
         const hasOnlyNumbers = /^\d+$/.test(bigIntString);

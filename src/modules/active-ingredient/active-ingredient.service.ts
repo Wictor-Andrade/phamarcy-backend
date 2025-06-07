@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ActiveIngredientRepository } from './active-ingredient.repository';
-import { CreateActiveIngredientDto } from './dto/create-active-ingredient.dto';
 import { UpdateActiveIngredientDto } from './dto/update-active-ingredient.dto';
+import { CreateActiveIngredientStepOneDto } from './dto/create-active-ingredient-step-one.dto';
 
 @Injectable()
 export class ActiveIngredientService {
   constructor(private readonly repo: ActiveIngredientRepository) {}
 
-  create(dto: CreateActiveIngredientDto) {
+  create(dto: CreateActiveIngredientStepOneDto) {
     return this.repo.create(dto);
   }
 
@@ -17,7 +17,8 @@ export class ActiveIngredientService {
 
   async findOne(id: string) {
     const result = await this.repo.findOne(id);
-    if (!result) throw new NotFoundException('Ingrediente ativo não encontrado');
+    if (!result)
+      throw new NotFoundException('Ingrediente ativo não encontrado');
     return result;
   }
 

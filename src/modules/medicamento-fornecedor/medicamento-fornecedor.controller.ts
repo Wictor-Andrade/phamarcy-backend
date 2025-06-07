@@ -1,14 +1,14 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
+  Delete,
   Get,
   Param,
   Patch,
-  Delete,
+  Post,
 } from '@nestjs/common';
 import { MedicamentoFornecedorService } from './medicamento-fornecedor.service';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateMedicamentoFornecedorDto } from './dto/create-medicamento-fornecedor.dto';
 import { UpdateMedicamentoFornecedorDto } from './dto/update-medicamento-fornecedor.dto';
 

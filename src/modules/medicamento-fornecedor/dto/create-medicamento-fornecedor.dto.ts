@@ -2,7 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsUUID } from 'class-validator';
 
 export class CreateMedicamentoFornecedorDto {
-  @ApiProperty({ description: 'ID do medicamento', example: 'uuid-medicamento' })
+  @ApiProperty({
+    description: 'ID do medicamento',
+    example: 'uuid-medicamento',
+  })
   @IsUUID()
   medicamentoId: string;
 

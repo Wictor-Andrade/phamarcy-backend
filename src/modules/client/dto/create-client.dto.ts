@@ -1,6 +1,6 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import {IsCpfCnpj} from '../../../common/decorators/is-cpf-cnpj.decorator'
+import { IsCpfCnpj } from '../../../common/decorators/is-cpf-cnpj.decorator';
 
 export class CreateClientDto {
   @ApiProperty({ example: 'João da Silva' })

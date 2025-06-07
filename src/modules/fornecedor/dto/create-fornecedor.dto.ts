@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
 export class CreateFornecedorDto {
   @ApiProperty({ example: 'Fornecedor XYZ', description: 'Nome do fornecedor' })
@@ -12,7 +12,10 @@ export class CreateFornecedorDto {
   @Matches(/^\d{14}$/, { message: 'CNPJ deve conter 14 dígitos numéricos' })
   cnpj: string;
 
-  @ApiProperty({ example: '(11) 91234-5678', description: 'Telefone do fornecedor' })
+  @ApiProperty({
+    example: '(11) 91234-5678',
+    description: 'Telefone do fornecedor',
+  })
   @IsString()
   @IsNotEmpty()
   telefone: string;

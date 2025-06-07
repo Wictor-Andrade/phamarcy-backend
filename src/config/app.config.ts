@@ -8,11 +8,9 @@ const jwtAcessSecret = sha256Helper.hash(jwtSecret + '-auth');
 
 const cookieNamePrefix = process.env.COOKIE_NAME_PREFIX;
 
-
-
 export default () => {
   return {
-    port: parseInt(process.env.PORT|| '4000', 10),
+    port: parseInt(process.env.PORT || '4000', 10),
     corsOrigin: String(process.env.CORS_ORIGIN).split(','),
     nodeEnv: process.env.NODE_ENV,
     isDev: process.env.NODE_ENV == 'development',

@@ -24,6 +24,25 @@ enum OriginType {
   BIOTECNOLOGICA
 }
 
+enum DosageForm {
+  COMPRIMIDO
+  CAPSULA
+  SOLUCAO
+  POMADA
+  INJETAVEL
+  OUTRO
+}
+
+enum DosageUnit {
+  MG
+  G
+  MCG
+  ML
+  L
+  MG_ML
+  UNIDADE
+}
+
 model Filial {
   id           String              @id @default(uuid()) @db.Uuid
   nome         String
@@ -64,7 +83,7 @@ model FilialFuncionario {
 }
 
 model ActiveIngredient {
-  id                    String        @id @default(uuid()) @db.Uuid
+  id                    String       @id @default(uuid()) @db.Uuid
   name                  String
   description           String
   contraindication      String
@@ -72,11 +91,11 @@ model ActiveIngredient {
   estoqueMin            Int?
   estoqueIdeal          Int?
   estoqueMax            Int?
-  idMedicamentoGenerico String?       @db.Uuid
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  idMedicamentoGenerico String?      @db.Uuid
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
   promocoes             Promocao[]
-  medicamentos          Medicamento[]
+  medications           Medication[]
 }
 
 model Config {
@@ -91,11 +110,16 @@ model Config {
   updatedAt           DateTime @updatedAt
 }
 
-model Medicamento {
+model Medication {
   id                       String                     @id @default(uuid()) @db.Uuid
-  name                     String
-  activeIngredientId       String                     @unique @db.Uuid
+  name                     String                     @db.Text
+  activeIngredientId       String                     @db.Uuid
   ActiveIngredient         ActiveIngredient           @relation(fields: [activeIngredientId], references: [id])
+  origin                   OriginType
+  dosageForm               DosageForm
+  dosageAmount             Float
+  dosageUnit               DosageUnit
+  imageUrl                 String?
   itensOrdemDeCompra       OrdemDeCompraItem[]
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
@@ -109,9 +133,9 @@ model Medicamento {
 model OrdemDeCompraItem {
   id              String        @id @default(uuid()) @db.Uuid
   ordemDeCompraId String        @db.Uuid
-  medicamentoId   String        @db.Uuid
+  idMedication    String        @db.Uuid
   ordemDeCompra   OrdemDeCompra @relation(fields: [ordemDeCompraId], references: [id], onDelete: Cascade)
-  medicamento     Medicamento   @relation(fields: [medicamentoId], references: [id], onDelete: Cascade)
+  medication      Medication    @relation(fields: [idMedication], references: [id], onDelete: Cascade)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 }
@@ -130,7 +154,7 @@ model OrdemDeCompra {
 model Promocao {
   id                  String           @id @default(uuid()) @db.Uuid
   idMedicamento       String           @db.Uuid
-  Medicamento         Medicamento      @relation(fields: [idMedicamento], references: [id], onDelete: Cascade)
+  Medication          Medication       @relation(fields: [idMedicamento], references: [id], onDelete: Cascade)
   activeIngredientId  String           @unique @db.Uuid
   ActiveIngredient    ActiveIngredient @relation(fields: [activeIngredientId], references: [id])
   porcentagemDesconto Float
@@ -153,15 +177,15 @@ model Fornecedor {
 }
 
 model MedicamentoFornecedor {
-  id            String      @id @default(uuid()) @db.Uuid
-  medicamentoId String      @db.Uuid
-  fornecedorId  String      @db.Uuid
-  medicamento   Medicamento @relation(fields: [medicamentoId], references: [id], onDelete: Cascade)
-  fornecedor    Fornecedor  @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id           String     @id @default(uuid()) @db.Uuid
+  idMedication String     @db.Uuid
+  idFornecedor String     @db.Uuid
+  medication   Medication @relation(fields: [idMedication], references: [id], onDelete: Cascade)
+  fornecedor   Fornecedor @relation(fields: [idFornecedor], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  @@unique([medicamentoId, fornecedorId])
+  @@unique([idMedication, idFornecedor])
 }
 
 model Client {
@@ -189,11 +213,11 @@ model NotaFiscalEletronica {
 
 model ItemNotaFiscalEletronica {
   id                     String                @id @default(uuid()) @db.Uuid
-  notaFiscalEletronicaId String                @db.Uuid
-  medicamentoId          String                @db.Uuid
+  idNotaFiscalEletronica String                @db.Uuid
+  idMedicamento          String                @db.Uuid
   estoqueMovimentacoes   EstoqueMovimentacao[]
-  notaFiscalEletronica   NotaFiscalEletronica  @relation(fields: [notaFiscalEletronicaId], references: [id], onDelete: Cascade)
-  medicamento            Medicamento           @relation(fields: [medicamentoId], references: [id])
+  notaFiscalEletronica   NotaFiscalEletronica  @relation(fields: [idNotaFiscalEletronica], references: [id], onDelete: Cascade)
+  medication             Medication            @relation(fields: [idMedicamento], references: [id])
   createdAt              DateTime              @default(now())
   updatedAt              DateTime              @updatedAt
 }
@@ -201,22 +225,22 @@ model ItemNotaFiscalEletronica {
 model ComissaoNotaFiscalEletronica {
   id                     String               @id @default(uuid()) @db.Uuid
   valorComissao          Float
-  notaFiscalEletronicaId String               @unique @db.Uuid
-  notaFiscalEletronica   NotaFiscalEletronica @relation(fields: [notaFiscalEletronicaId], references: [id], onDelete: Cascade)
+  idNotaFiscalEletronica String               @unique @db.Uuid
+  notaFiscalEletronica   NotaFiscalEletronica @relation(fields: [idNotaFiscalEletronica], references: [id], onDelete: Cascade)
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
 }
 
 model EstoqueMovimentacao {
   id                         String                   @id @default(uuid()) @db.Uuid
-  medicamentoId              String                   @db.Uuid
-  itemNotaFiscalEletronicaId String                   @db.Uuid
+  idMedication               String                   @db.Uuid
+  idItemNotaFiscalEletronica String                   @db.Uuid
   tipoMovimento              TipoMovimento
   quantidade                 Int
   precoUnitario              Float
   dataMovimentacao           DateTime                 @default(now())
-  medicamento                Medicamento              @relation(fields: [medicamentoId], references: [id], onDelete: Cascade)
-  itemNotaFiscalEletronica   ItemNotaFiscalEletronica @relation(fields: [itemNotaFiscalEletronicaId], references: [id], onDelete: Cascade)
+  medication                 Medication               @relation(fields: [idMedication], references: [id], onDelete: Cascade)
+  itemNotaFiscalEletronica   ItemNotaFiscalEletronica @relation(fields: [idItemNotaFiscalEletronica], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -241,19 +265,19 @@ model Cotacao {
 }
 
 model ItemCotacao {
-  id               String      @id @default(uuid()) @db.Uuid
-  cotacaoId        String      @db.Uuid
-  medicamentoId    String      @db.Uuid
+  id               String     @id @default(uuid()) @db.Uuid
+  cotacaoId        String     @db.Uuid
+  idMedication     String     @db.Uuid
   quantidade       Int
   precoUnitario    Float
   prazoEntregaDias Int
-  cotacao          Cotacao     @relation(fields: [cotacaoId], references: [id], onDelete: Cascade)
-  medicamento      Medicamento @relation(fields: [medicamentoId], references: [id])
+  cotacao          Cotacao    @relation(fields: [cotacaoId], references: [id], onDelete: Cascade)
+  medication       Medication @relation(fields: [idMedication], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([cotacaoId, medicamentoId])
+  @@unique([cotacaoId, idMedication])
 }
 
 model Role {

@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MedicamentoRepository } from './medicamento.repository';
-import { CreateMedicamentoDto } from './dto/create-medicamento.dto';
-import { UpdateMedicamentoDto } from './dto/update-medicamento.dto';
+import { MedicationRepository } from './medication.repository';
+import { CreateMedicationDto } from './dto/create-medication.dto';
+import { UpdateMedicationDto } from './dto/update-medication.dto';
 
 @Injectable()
-export class MedicamentoService {
-  constructor(private readonly repo: MedicamentoRepository) {}
+export class MedicationService {
+  constructor(private readonly repo: MedicationRepository) {}
 
-  create(dto: CreateMedicamentoDto) {
+  create(dto: CreateMedicationDto) {
     return this.repo.create(dto);
   }
 
@@ -21,7 +21,7 @@ export class MedicamentoService {
     return medicamento;
   }
 
-  async update(id: string, dto: UpdateMedicamentoDto) {
+  async update(id: string, dto: UpdateMedicationDto) {
     await this.findOne(id);
     return this.repo.update(id, dto);
   }

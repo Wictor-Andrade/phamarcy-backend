@@ -14,11 +14,11 @@ import { configSchema } from '@config/schemas/config.schema';
 import { ClientModule } from '@modules/client/client.module';
 import { FuncionarioModule } from '@modules/funcionario/funcionario.module';
 import { FilialConfigModule } from '@modules/filial-config/filial-config.module';
-import { MedicamentoModule } from '@modules/medicamento/medicamento.module';
 import { ActiveIngredientModule } from '@modules/active-ingredient/active-ingredient.module';
 import { OrdemDeCompraItemModule } from '@modules/ordem-compra-item/ordem-de-compra-item.module';
 import { MedicamentoFornecedorModule } from '@modules/medicamento-fornecedor/medicamento-fornecedor.module';
 import { NotaFiscalEletronicaModule } from '@modules/nota-fiscal/nota-fiscal-eletronica.module';
+import { MedicationModule } from '@modules/medication/medication.module';
 
 @Module({
   imports: [
@@ -43,10 +43,9 @@ import { NotaFiscalEletronicaModule } from '@modules/nota-fiscal/nota-fiscal-ele
     FuncionarioModule,
     FilialConfigModule,
     OrdemDeCompraItemModule,
-    MedicamentoModule,
     ActiveIngredientModule,
     OrdemDeCompraItemModule,
-    MedicamentoModule,
+    MedicationModule,
     MedicamentoFornecedorModule,
     NotaFiscalEletronicaModule,
   ],

@@ -11,7 +11,7 @@ export class OrdemDeCompraItemService {
   async create(createDto: CreateOrdemDeCompraItemDto) {
     const data: Prisma.OrdemDeCompraItemCreateInput = {
       ordemDeCompra: { connect: { id: createDto.ordemDeCompraId } },
-      medicamento: { connect: { id: createDto.medicamentoId } },
+      medication: { connect: { id: createDto.medicamentoId } },
     };
     return this.repository.create(data);
   }

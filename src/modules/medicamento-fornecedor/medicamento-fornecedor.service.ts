@@ -10,7 +10,7 @@ export class MedicamentoFornecedorService {
 
   async create(dto: CreateMedicamentoFornecedorDto) {
     const data: Prisma.MedicamentoFornecedorCreateInput = {
-      medicamento: { connect: { id: dto.medicamentoId } },
+      medication: { connect: { id: dto.medicamentoId } },
       fornecedor: { connect: { id: dto.fornecedorId } },
     };
     return this.repository.create(data);
@@ -32,7 +32,7 @@ export class MedicamentoFornecedorService {
     await this.findOne(id);
 
     const data: Prisma.MedicamentoFornecedorUpdateInput = {
-      medicamento: dto.medicamentoId
+      medication: dto.medicamentoId
         ? { connect: { id: dto.medicamentoId } }
         : undefined,
       fornecedor: dto.fornecedorId

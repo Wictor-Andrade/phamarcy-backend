@@ -8,16 +8,16 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { MedicamentoService } from './medicamento.service';
-import { CreateMedicamentoDto } from './dto/create-medicamento.dto';
-import { UpdateMedicamentoDto } from './dto/update-medicamento.dto';
+import { MedicationService } from './medication.service';
+import { CreateMedicationDto } from './dto/create-medication.dto';
+import { UpdateMedicationDto } from './dto/update-medication.dto';
 
-@Controller('medicamentos')
-export class MedicamentoController {
-  constructor(private readonly service: MedicamentoService) {}
+@Controller('medications')
+export class MedicationController {
+  constructor(private readonly service: MedicationService) {}
 
   @Post()
-  create(@Body() dto: CreateMedicamentoDto) {
+  create(@Body() dto: CreateMedicationDto) {
     return this.service.create(dto);
   }
 
@@ -34,7 +34,7 @@ export class MedicamentoController {
   @Put(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateMedicamentoDto,
+    @Body() dto: UpdateMedicationDto,
   ) {
     return this.service.update(id, dto);
   }

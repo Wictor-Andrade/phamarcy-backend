@@ -11,6 +11,7 @@ import {
 import { MedicationService } from './medication.service';
 import { CreateMedicationDto } from './dto/create-medication.dto';
 import { UpdateMedicationDto } from './dto/update-medication.dto';
+import { FilterMedicamentoDto } from '@modules/medication/dto/filter-medication.dto';
 
 @Controller('medications')
 export class MedicationController {
@@ -24,6 +25,11 @@ export class MedicationController {
   @Get()
   findAll() {
     return this.service.findAll();
+  }
+
+  @Post('filter')
+  filter(@Body() dto: FilterMedicamentoDto) {
+    return this.service.filter(dto);
   }
 
   @Get(':id')

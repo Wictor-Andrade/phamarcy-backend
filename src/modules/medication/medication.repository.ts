@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateMedicationDto } from './dto/create-medication.dto';
 import { UpdateMedicationDto } from './dto/update-medication.dto';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MedicationRepository {
@@ -13,6 +14,15 @@ export class MedicationRepository {
 
   findAll() {
     return this.prisma.medication.findMany({
+      include: {
+        ActiveIngredient: true,
+      },
+    });
+  }
+
+  findAllWhere(where: Prisma.MedicationWhereInput) {
+    return this.prisma.medication.findMany({
+      where,
       include: {
         ActiveIngredient: true,
       },
